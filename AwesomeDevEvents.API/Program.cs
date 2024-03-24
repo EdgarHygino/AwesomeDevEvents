@@ -1,19 +1,40 @@
 using AwesomeDevEvents.API.Context;
+using AwesomeDevEvents.API.Mappers;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Models;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-var conectionString = builder.Configuration.GetConnectionString("DevEventsCs");
+var connectionString = builder.Configuration.GetConnectionString("DevEventsCs");
 
-builder.Services.AddDbContext<DevEventsDBContext>(e => e.UseSqlServer(conectionString));
+builder.Services.AddDbContext<DevEventsDBContext>(e => e.UseSqlServer(connectionString));
+
+builder.Services.AddAutoMapper(typeof(DevEventProfile).Assembly);
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Title = "AwesomeDevEvents.API",
+        Version = "v1",
+        Contact = new OpenApiContact
+        {
+            Name = "EdgarHygino",
+            Email = "edgar.hygino@gmail.com",
+            Url = new Uri("https://www.linkedin.com/in/edgar-hygino/")
+        }
+    });
+
+    //var xmlFile = "AwesomeDevEvents.API.xml";
+    //var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+    //c.IncludeXmlComments(xmlPath);
+});
 
 var app = builder.Build();
 
